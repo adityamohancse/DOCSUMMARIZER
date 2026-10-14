@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Your AI-generated document summary.">
+    <title>{{ result.filename }} · Document Summarizer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="/" aria-label="Document Summarizer home">
+            <span class="brand-mark" aria-hidden="true">D</span>
+            <span>Document Summarizer</span>
+        </a>
+        <a class="text-link" href="/">+ New summary</a>
+    </header>
+
+    <main class="results-shell">
+        <div class="results-intro">
+            <p class="eyebrow">SUMMARY READY</p>
+            <h1>{{ result.filename }}</h1>
+            <p class="results-meta">Generated with Agentic RAG · grounded in your uploaded document</p>
+        </div>
+
+        <article class="summary-card">
+            <div class="summary-card-header">
+                <div>
+                    <span class="status-dot" aria-hidden="true"></span>
+                    <span>Document summary</span>
+                </div>
+                <button class="secondary-button" type="button" onclick="window.print()">Print</button>
+            </div>
+            <div class="summary-content">
+                {{ result.summary_html | safe }}
+            </div>
+        </article>
+
+        <div class="results-footer">
+            <a class="primary-button inline-button" href="/">Summarize another PDF <span aria-hidden="true">→</span></a>
+            <p>AI-generated summaries can contain mistakes. Verify important details against the source document.</p>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Turn a PDF into a clear, structured summary with Agentic RAG.">
+    <title>Document Summarizer</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <a class="brand" href="/" aria-label="Document Summarizer home">
+            <span class="brand-mark" aria-hidden="true">D</span>
+            <span>Document Summarizer</span>
+        </a>
+        <span class="header-note">Agentic RAG with LlamaIndex</span>
+    </header>
+
+    <main class="page-shell">
+        <section class="hero">
+            <p class="eyebrow">READ LESS. UNDERSTAND MORE.</p>
+            <h1>Make sense of any document.</h1>
+            <p class="hero-copy">Upload a PDF and get an accurate, structured summary in moments.</p>
+        </section>
+
+        {% if error %}
+        <div class="alert alert-error" role="alert">
+            <strong>We couldn't summarize that file.</strong>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <section class="upload-card" aria-labelledby="upload-title">
+            <div class="card-heading">
+                <div>
+                    <p class="eyebrow">NEW SUMMARY</p>
+                    <h2 id="upload-title">Upload your PDF</h2>
+                </div>
+                <span class="file-badge">PDF only</span>
+            </div>
+
+            <form id="upload-form" action="/summarize/" enctype="multipart/form-data" method="post">
+                <label class="dropzone" id="dropzone" for="file">
+                    <span class="upload-icon" aria-hidden="true">↑</span>
+                    <span class="dropzone-title">Drop your PDF here</span>
+                    <span class="dropzone-subtitle">or <span class="browse-link">browse files</span></span>
+                    <span class="file-name" id="file-name">Maximum file size: 20 MB</span>
+                    <input id="file" name="file" type="file" accept="application/pdf,.pdf" required>
+                </label>
+                <button class="primary-button" id="submit-button" type="submit">
+                    <span class="button-label">Upload and summarize</span>
+                    <span class="button-loading" aria-hidden="true">Preparing summary…</span>
+                    <span aria-hidden="true">→</span>
+                </button>
+            </form>
+        </section>
+
+        <p class="privacy-note"><span aria-hidden="true">✦</span> Your uploaded file is processed temporarily and removed after summarization.</p>
+    </main>
+
+    <script>
+        const form = document.getElementById("upload-form");
+        const input = document.getElementById("file");
+        const dropzone = document.getElementById("dropzone");
+        const fileName = document.getElementById("file-name");
+        const submitButton = document.getElementById("submit-button");
+
+        function showFile(file) {
+            if (file) {
+                fileName.textContent = file.name;
+                dropzone.classList.add("has-file");
+            }
+        }
+
+        input.addEventListener("change", () => showFile(input.files[0]));
+        ["dragenter", "dragover"].forEach((eventName) => {
+            dropzone.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                dropzone.classList.add("is-dragging");
+            });
+        });
+        ["dragleave", "drop"].forEach((eventName) => {
+            dropzone.addEventListener(eventName, (event) => {
+                event.preventDefault();
+                dropzone.classList.remove("is-dragging");
+            });
+        });
+        dropzone.addEventListener("drop", (event) => {
+            const file = event.dataTransfer.files[0];
+            if (file) {
+                input.files = event.dataTransfer.files;
+                showFile(file);
+            }
+        });
+        form.addEventListener("submit", () => {
+            submitButton.classList.add("is-loading");
+            submitButton.disabled = true;
+        });
+    </script>
+</body>
+</html>
