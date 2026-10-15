@@ -68,11 +68,12 @@ def configure_models() -> None:
     )
 
 
-@app.get("/", response_class=None)
+@app.get("/")
 async def home(request: Request):
     return templates.TemplateResponse(
-        "upload_form.html",
-        {"request": request, "error": None},
+        request=request,
+        name="upload_form.html",
+        context={"error": None},
     )
 
 
@@ -171,21 +172,35 @@ async def upload_file(file: UploadFile = File(...)):
     return {"filename": result["filename"], "Summary": result["summary"]}
 
 
+
 @app.post("/summarize/")
 async def summarize_page(request: Request, file: UploadFile = File(...)):
     """Accept one PDF and render the formatted summary page."""
     try:
         result = await process_upload(file)
+
         return templates.TemplateResponse(
-            "results.html",
-            {"request": request, "result": result, "error": None},
+            request=request,
+            name="results.html",
+            context={"result": result, "error": None},
         )
+
     except HTTPException as exc:
         return templates.TemplateResponse(
-            "upload_form.html",
-            {"request": request, "error": exc.detail},
+            request=request,
+            name="upload_form.html",
+            context={"error": str(exc.detail)},
             status_code=exc.status_code,
         )
+
+    except Exception as exc:
+        return templates.TemplateResponse(
+            request=request,
+            name="upload_form.html",
+            context={"error": str(exc)},
+            status_code=500,
+        )
+
 
 
 if __name__ == "__main__":
